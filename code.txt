@@ -1,0 +1,63 @@
+// INTIALIZATION
+var_start = Integer(0);    //a count of how many readers have started reading.
+var_completed= Integer(0);   // a count of how many readers have completed reading.
+wait = Boolean(false);        // this indicated whether a writing is waiting.
+in = Semaphore(1);         
+out = Semaphore(1);     
+writer=Semaphore(0);        //this is initialised to zero
+
+
+// READER CODE FORMAT
+do{
+<ENTRY SECTION>
+     wait(in,process_id);        //wait on the "in" semaphore.
+     var_start++;               //increment var_start since this process will now start reading.
+     signal(in);
+<CRITICAL SECTION>
+
+<EXIT SECTION>
+     wait(out,process_id);         //wait on the out semaphore.
+    var_completed++;                //increment var_completed since we have completed reading.
+if(wait && var_started == var_completed)
+{
+    signal(writer);
+}
+ signal(out);
+
+<REMAINDER SECTION>
+
+}while(true);
+
+
+
+
+
+
+// WRITER CODE FORMAT
+
+do{
+
+<ENTRY SECTION>
+
+      wait(in,process_id);
+ wait(out,process_id);
+if(var_start == var_completed)
+{
+    signal(out);
+}
+else
+{
+    wait = true;
+      signal(out);
+       wait(writer,process_id);
+    wait = false;
+}
+
+<CRITICAL SECTION>
+       
+<EXIT SECTION>
+     signal(in); 
+       
+<REMAINDER SECTION>
+       
+}while(true);
